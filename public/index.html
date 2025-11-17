@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="sl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Registracija</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>Registracija uporabnika</h1>
+
+    <form id="registerForm">
+      <label for="regName">Ime</label>
+      <input type="text" id="regName" required placeholder="Ime">
+
+      <label for="regEmail">Email</label>
+      <input type="email" id="regEmail" required placeholder="Email">
+
+      <label for="regPassword">Geslo</label>
+      <input type="password" id="regPassword" required placeholder="Geslo">
+
+      <button type="submit">Registriraj se</button>
+    </form>
+
+    <p id="regMsg" class="msg"></p>
+
+    <p class="small">
+      Že imaš račun? <a href="login.html">Prijavi se</a>
+    </p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
