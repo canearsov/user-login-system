@@ -4,7 +4,7 @@ async function connectDB() {
   if (mongoose.connection.readyState === 1) return;
 
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
