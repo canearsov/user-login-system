@@ -10,59 +10,69 @@ const auth = require('../middleware/auth');
 // =========================
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
+
+  if (!name || !email || !password)
+    return res.status(400).json({ msg: 'Prosimo, izpolnite vsa polja' });
+
   try {
     let user = await User.findOne({ email });
     if (user) return res.status(400).json({ msg: 'Uporabnik že obstaja' });
 
-    user = new User({ name, email, password });
-
-    // Šifriranje gesla
     const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    user = new User({ name, email, password: hashedPassword });
     await user.save();
 
-    // JWT
-    const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const payload = { id: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
-    res.json({ token });
+    res.status(201).json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
+// =========================
+//  LOGIN
+// =========================
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
 
-// LOGIN
-router.post("/login", async (req, res) => {
-    try {
-        const { email, password } = req.body;
+  if (!email || !password)
+    return res.status(400).json({ msg: 'Prosimo, izpolnite vsa polja' });
 
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ msg: "Uporabnik ne obstaja" });
-        }
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ msg: 'Uporabnik ne obstaja' });
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(400).json({ msg: "Napačno geslo" });
-        }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: 'Napačno geslo' });
 
-        const token = jwt.sign(
-            { id: user._id, email: user.email },
-            process.env.JWT_SECRET,   // tukaj uporabiš svoj SECRET
-            { expiresIn: "2h" }
-        );
+    const payload = { id: user._id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
 
-        res.json({ msg: "Prijava uspešna", token });
-
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: "Napaka na serverju" });
-    }
+    res.json({
+      token,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ msg: 'Server error' });
+  }
 });
-
 
 // =========================
 //  PRIDOBI PRIJAVLJENEGA UPORABNIKA
@@ -70,15 +80,12 @@ router.post("/login", async (req, res) => {
 router.get('/user', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
-
-    if (!user) 
-      return res.status(404).json({ msg: 'Uporabnik ni najden' });
+    if (!user) return res.status(404).json({ msg: 'Uporabnik ni najden' });
 
     res.json(user);
-
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).json({ msg: 'Server error' });
   }
 });
 
