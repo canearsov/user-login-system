@@ -1,5 +1,3 @@
-// script.js - DELUJE Z BACKENDOM (MongoDB + Express)
-
 document.addEventListener('DOMContentLoaded', () => {
 
   // REGISTER
@@ -13,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('regPassword').value;
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/register', {
+        const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name, email, password })
@@ -23,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const msgEl = document.getElementById('regMsg');
 
         if (!res.ok) {
-          msgEl.textContent = data.msg;
+          msgEl.textContent = data.msg || "Napaka pri registraciji.";
           msgEl.classList.add('error');
           return;
         }
@@ -50,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgEl = document.getElementById('loginMsg');
 
       try {
-        const res = await fetch('http://localhost:5000/api/auth/login', {
+        const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email, password })
@@ -59,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = await res.json();
 
         if (!res.ok) {
-          msgEl.textContent = data.msg;
+          msgEl.textContent = data.msg || "Napaka pri prijavi.";
           msgEl.classList.add('error');
           return;
         }
@@ -67,7 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
         msgEl.textContent = 'Prijava uspešna!';
         msgEl.classList.add('success');
 
-        // shrani userja
         localStorage.setItem('user', JSON.stringify(data.user));
 
         setTimeout(() => window.location.href = 'index.html', 800);
