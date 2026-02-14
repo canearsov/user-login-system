@@ -11,11 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const password = document.getElementById('regPassword').value;
 
       try {
-           const res = await fetch('http://localhost:3000/api/auth/register', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ name, email, password })
-});
+   const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
 
         const data = await res.json();
         const msgEl = document.getElementById('regMsg');
@@ -48,11 +48,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgEl = document.getElementById('loginMsg');
 
       try {
-     const res = await fetch('http://localhost:3000/api/auth/login', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ email, password })
-});
+       const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
 
         const data = await res.json();
 
