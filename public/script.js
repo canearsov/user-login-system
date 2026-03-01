@@ -74,16 +74,4 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  // Eye show hide
-  const regPassword = document.getElementById('regPassword');
-  const toggleReg = document.getElementById('toggleRegPassword');
-
-  if (toggleReg) {
-  toggleReg.addEventListener('click', () => {
-    const type = regPassword.type === "password" ? "text" : "password";
-    regPassword.type = type;
-
-    toggleReg.textContent = type === "password" ? "👁" : "👁";
-  });
-}
 });
