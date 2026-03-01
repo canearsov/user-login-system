@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         localStorage.setItem('user', JSON.stringify(data.user));
 
-        setTimeout(() => window.location.href = 'index.html', 800);
+        setTimeout(() => window.location.href = 'aplikacija.html', 800);
 
       } catch (err) {
         console.error(err);
