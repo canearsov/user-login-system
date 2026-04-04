@@ -8,5 +8,34 @@
 </head>
 <body>
 <h1>uspesno</h1>
+<button onclick="logout()">Logout</button>
+
+<script>
+  const token = localStorage.getItem("token");
+
+if (!token) {
+    window.location.href = "login.html";
+}
+function logout() {
+    localStorage.removeItem("token"); // izbriše JWT
+    window.location.href = "login.html"; // nazaj na prijavo
+}
+</script>
 </body>
+<p id="user"></p>
+
+<script>
+const token1 = localStorage.getItem("token");
+
+fetch('/api/profile', {
+    headers: {
+        "Authorization": token1
+    }
+})
+.then(res => res.json())
+.then(data => {
+    document.getElementById("user").innerText =
+        "Prijavljen: " + data.email;
+});
+</script>
 </html>
