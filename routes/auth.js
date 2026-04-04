@@ -1,4 +1,3 @@
-let activeUsers = [];
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
@@ -7,11 +6,15 @@ const User = require('../models/User');
 const auth = require('../middleware/auth');
 
 // =========================
+//  ACTIVE USERS
+// =========================
+let activeUsers = [];
+
+// =========================
 //  REGISTRACIJA
 // =========================
 router.post('/register', async (req, res) => {
   const { name, email, password } = req.body;
-
   if (!name || !email || !password)
     return res.status(400).json({ msg: 'Prosimo, izpolnite vsa polja' });
 
@@ -47,7 +50,6 @@ router.post('/register', async (req, res) => {
 // =========================
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   if (!email || !password)
     return res.status(400).json({ msg: 'Prosimo, izpolnite vsa polja' });
 
@@ -60,6 +62,12 @@ router.post('/login', async (req, res) => {
 
     const payload = { id: user._id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
+
+    // Dodaj v activeUsers
+    if (!activeUsers.includes(user.email)) {
+        activeUsers.push(user.email);
+    }
+    console.log("ACTIVE USERS:", activeUsers); // DEBUG
 
     res.json({
       token,
@@ -76,13 +84,12 @@ router.post('/login', async (req, res) => {
 });
 
 // =========================
-//  PRIDOBI PRIJAVLJENEGA UPORABNIKA
+//  GET LOGGED-IN USER
 // =========================
 router.get('/user', auth, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('-password');
     if (!user) return res.status(404).json({ msg: 'Uporabnik ni najden' });
-
     res.json(user);
   } catch (err) {
     console.error(err.message);
@@ -90,22 +97,21 @@ router.get('/user', auth, async (req, res) => {
   }
 });
 
-module.exports = router;
-router.get('/profile', (req, res) => {
-    const token = req.headers.authorization;
+// =========================
+//  ACTIVE USERS ROUTE
+// =========================
+router.get('/active-users', (req, res) => {
+    res.json(activeUsers);
+});
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        res.json(decoded);
-    } catch (err) {
-        res.status(401).send("Invalid token");
-    }
+// =========================
+//  LOGOUT
+// =========================
+router.post('/logout', (req, res) => {
+    const { email } = req.body;
+    activeUsers = activeUsers.filter(u => u !== email);
+    console.log("ACTIVE USERS AFTER LOGOUT:", activeUsers); // DEBUG
+    res.json({ message: "Logged out" });
 });
-router.get('/users', async (req, res) => {
-    try {
-        const users = await User.find().select('-password'); // brez gesel
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ message: "Error fetching users" });
-    }
-});
+
+module.exports = router;
