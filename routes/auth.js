@@ -100,3 +100,11 @@ router.get('/profile', (req, res) => {
         res.status(401).send("Invalid token");
     }
 });
+router.get('/users', async (req, res) => {
+    try {
+        const users = await User.find().select('-password'); // brez gesel
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: "Error fetching users" });
+    }
+});
