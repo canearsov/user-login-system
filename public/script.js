@@ -48,30 +48,27 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgEl = document.getElementById('loginMsg');
 
       try {
-       const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
-        });
+    const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+    });
 
-        const data = await res.json();
+    const data = await res.json(); // 
 
-        if (!res.ok) {
-          msgEl.textContent = data.msg || "Napaka pri prijavi.";
-          msgEl.classList.add('error');
-          return;
-        }
+    console.log(data); // 🔍 debug
 
-        msgEl.textContent = 'Prijava uspešna!';
-        msgEl.classList.add('success');
+    if (res.ok) {
+        localStorage.setItem("token", data.token); // 
 
-        localStorage.setItem('user', JSON.stringify(data.user));
+        window.location.href = "aplikacija.html"; // ✅ redirect
+    } else {
+        document.getElementById("loginMsg").innerText = data.message || "Login failed";
+    }
 
-        setTimeout(() => window.location.href = 'aplikacija.html', 800);
-
-      } catch (err) {
-        console.error(err);
-      }
+} catch (err) {
+    console.error(err);
+}
     });
   }
 });
