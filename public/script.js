@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const data = await res.json(); // 
+        localStorage.setItem("user", JSON.stringify(data.user));
+localStorage.setItem("token", data.token);
 
     console.log(data); // 🔍 debug
 
