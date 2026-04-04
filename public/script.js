@@ -69,6 +69,22 @@ document.addEventListener('DOMContentLoaded', () => {
 } catch (err) {
     console.error(err);
 }
-    });
+      
+    });if (!activeUsers.includes(user.email)) {
+    activeUsers.push(user.email);
+}
   }
+  // ACTIVE USERS
+router.get('/active-users', (req, res) => {
+    res.json(activeUsers);
+});
+
+// LOGOUT
+router.post('/logout', (req, res) => {
+    const { email } = req.body;
+
+    activeUsers = activeUsers.filter(u => u !== email);
+
+    res.json({ message: "Logged out" });
+});
 });
