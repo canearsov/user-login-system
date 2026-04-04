@@ -90,7 +90,7 @@ router.get('/user', auth, async (req, res) => {
 });
 
 module.exports = router;
-app.get('/api/profile', (req, res) => {
+router.get('/profile', (req, res) => {
     const token = req.headers.authorization;
 
     try {
