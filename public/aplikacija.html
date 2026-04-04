@@ -12,57 +12,66 @@
 
     <button onclick="logout()">Logout</button>
 
-    <h2>Uporabniki:</h2>
+    <h2>Prijavljeni uporabniki:</h2>
     <ul id="userList"></ul>
 </div>
 
 <script>
-const token = localStorage.getItem("token");
+document.addEventListener('DOMContentLoaded', () => {
+    const token = localStorage.getItem("token");
 
-if (!token) {
-    window.location.href = "login.html";
-}
-
-// logout
-    function logout() {
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: user.email })
-    });
-
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-
-    window.location.href = "login.html";
-}
-}
-
-// load users
-async function loadUsers() {
-    try {
-        const res = await fetch('/api/auth/active-users');
-        const users = await res.json();
-
-        console.log(users); // 🔍 DEBUG
-
-        const list = document.getElementById("userList");
-        list.innerHTML = "";
-
-        users.forEach(user => {
-            const li = document.createElement("li");
-            li.textContent = user.email;
-            list.appendChild(li);
-        });
-
-    } catch (err) {
-        console.error(err);
+    if (!token) {
+        window.location.href = "login.html";
     }
-}
 
-loadUsers();
+    // =========================
+    // LOGOUT
+    // =========================
+    window.logout = async function() {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if (!user) return window.location.href = "login.html";
+
+        try {
+            await fetch('/api/auth/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email })
+            });
+        } catch (err) {
+            console.error(err);
+        }
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        window.location.href = "login.html";
+    };
+
+    // =========================
+    // LOAD ACTIVE USERS
+    // =========================
+    async function loadUsers() {
+        try {
+            const res = await fetch('/api/auth/active-users');
+            const users = await res.json();
+
+            console.log("Active users:", users); // 🔍 DEBUG
+
+            const list = document.getElementById("userList");
+            list.innerHTML = "";
+
+            users.forEach(email => {
+                const li = document.createElement("li");
+                li.textContent = email;
+                list.appendChild(li);
+            });
+
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    loadUsers();
+});
 </script>
 
 </body>
