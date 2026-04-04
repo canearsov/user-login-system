@@ -24,15 +24,26 @@ if (!token) {
 }
 
 // logout
-function logout() {
+    function logout() {
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email })
+    });
+
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
+
     window.location.href = "login.html";
+}
 }
 
 // load users
 async function loadUsers() {
     try {
-        const res = await fetch('/api/auth/users');
+        const res = await fetch('/api/auth/active-users');
         const users = await res.json();
 
         console.log(users); // 🔍 DEBUG
