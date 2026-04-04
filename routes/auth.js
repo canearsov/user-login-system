@@ -90,3 +90,13 @@ router.get('/user', auth, async (req, res) => {
 });
 
 module.exports = router;
+app.get('/api/profile', (req, res) => {
+    const token = req.headers.authorization;
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        res.json(decoded);
+    } catch (err) {
+        res.status(401).send("Invalid token");
+    }
+});
