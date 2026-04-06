@@ -71,7 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
           msgEl.textContent = data.msg || "Login failed";
           msgEl.classList.add('error');
         }
+      msgEl.textContent = 'Prijava uspešna! Preusmerjam...';
+        msgEl.classList.add('success');
 
+        setTimeout(() => window.location.href = 'aplikacija.html', 1000);
       } catch (err) {
         console.error(err);
       }
